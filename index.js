@@ -153,7 +153,9 @@ function pumpFileDataReadStream(self, entry, readStream) {
             .pipe(compressedSizeCounter)
             .pipe(self.outputStream, {end: false});
   compressedSizeCounter.on("end", function() {
-    entry.crc32 = crc32Watcher.crc32;
+    if (entry.crc32 == null) { // It can be set via options for alreadyCompressed case.
+      entry.crc32 = crc32Watcher.crc32;
+    }
     if (entry.uncompressedSize == null) {
       entry.uncompressedSize = uncompressedSizeCounter.byteCount;
     } else {
@@ -409,6 +411,7 @@ function Entry(metadataPath, isDirectory, options) {
     this.compress = true; // default
     if (options.compress != null) this.compress = !!options.compress;
     if (options.alreadyCompressed) this.alreadyCompressed = !!options.alreadyCompressed;
+    if (options.crc32 != null) this.crc32 = options.crc32;
   }
   this.forceZip64Format = !!options.forceZip64Format;
   if (options.fileComment) {
