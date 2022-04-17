@@ -157,7 +157,7 @@ function pumpFileDataReadStream(self, entry, readStream) {
     if (entry.uncompressedSize == null) {
       entry.uncompressedSize = uncompressedSizeCounter.byteCount;
     } else {
-      if (entry.uncompressedSize !== uncompressedSizeCounter.byteCount) return self.emit("error", new Error("file data stream has unexpected number of bytes"));
+      if (entry.uncompressedSize !== uncompressedSizeCounter.byteCount && !entry.alreadyCompressed) return self.emit("error", new Error("file data stream has unexpected number of bytes"));
     }
     entry.compressedSize = compressedSizeCounter.byteCount;
     self.outputStreamCursor += entry.compressedSize;
