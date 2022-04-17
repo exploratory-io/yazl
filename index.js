@@ -68,7 +68,7 @@ ZipFile.prototype.addBuffer = function(buffer, metadataPath, options) {
   entry.crc32 = crc32.unsigned(buffer);
   entry.crcAndFileSizeKnown = true;
   self.entries.push(entry);
-  if (!entry.compress) {
+  if (!entry.compress || entry.alreadyCompressed) {
     setCompressedBuffer(buffer);
   } else {
     zlib.deflateRaw(buffer, function(err, compressedBuffer) {
@@ -145,7 +145,7 @@ function writeToOutputStream(self, buffer) {
 function pumpFileDataReadStream(self, entry, readStream) {
   var crc32Watcher = new Crc32Watcher();
   var uncompressedSizeCounter = new ByteCounter();
-  var compressor = entry.compress ? new zlib.DeflateRaw() : new PassThrough();
+  var compressor = (entry.compress && !entry.alreadyCompressed) ? new zlib.DeflateRaw() : new PassThrough();
   var compressedSizeCounter = new ByteCounter();
   readStream.pipe(crc32Watcher)
             .pipe(uncompressedSizeCounter)
@@ -408,6 +408,7 @@ function Entry(metadataPath, isDirectory, options) {
   } else {
     this.compress = true; // default
     if (options.compress != null) this.compress = !!options.compress;
+    if (options.alreadyCompressed) this.alreadyCompressed = !!options.alreadyCompressed;
   }
   this.forceZip64Format = !!options.forceZip64Format;
   if (options.fileComment) {
@@ -618,7 +619,7 @@ Entry.prototype.getCentralDirectoryRecord = function() {
 Entry.prototype.getCompressionMethod = function() {
   var NO_COMPRESSION = 0;
   var DEFLATE_COMPRESSION = 8;
-  return this.compress ? DEFLATE_COMPRESSION : NO_COMPRESSION;
+  return (this.compress || this.alreadyCompressed) ? DEFLATE_COMPRESSION : NO_COMPRESSION;
 };
 
 function dateToDosDateTime(jsDate) {
