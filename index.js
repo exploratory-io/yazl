@@ -627,14 +627,14 @@ Entry.prototype.getCompressionMethod = function() {
 
 function dateToDosDateTime(jsDate) {
   var date = 0;
-  date |= jsDate.getDate() & 0x1f; // 1-31
-  date |= ((jsDate.getMonth() + 1) & 0xf) << 5; // 0-11, 1-12
-  date |= ((jsDate.getFullYear() - 1980) & 0x7f) << 9; // 0-128, 1980-2108
+  date |= jsDate.getUTCDate() & 0x1f; // 1-31
+  date |= ((jsDate.getUTCMonth() + 1) & 0xf) << 5; // 0-11, 1-12
+  date |= ((jsDate.getUTCFullYear() - 1980) & 0x7f) << 9; // 0-128, 1980-2108
 
   var time = 0;
-  time |= Math.floor(jsDate.getSeconds() / 2); // 0-59, 0-29 (lose odd numbers)
-  time |= (jsDate.getMinutes() & 0x3f) << 5; // 0-59
-  time |= (jsDate.getHours() & 0x1f) << 11; // 0-23
+  time |= Math.floor(jsDate.getUTCSeconds() / 2); // 0-59, 0-29 (lose odd numbers)
+  time |= (jsDate.getUTCMinutes() & 0x3f) << 5; // 0-59
+  time |= (jsDate.getUTCHours() & 0x1f) << 11; // 0-23
 
   return {date: date, time: time};
 }
