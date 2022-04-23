@@ -397,6 +397,15 @@ function Entry(metadataPath, isDirectory, options) {
     this.crc32 = 0;
     this.uncompressedSize = 0;
     this.compressedSize = 0;
+  } else if (options.alreadyCompressed) {
+    this.alreadyCompressed = true;
+    this.crcAndFileSizeKnown = true;
+    this.crc32 = null;
+    this.uncompressedSize = null;
+    this.compressedSize = null;
+    if (options.crc32 != null) this.crc32 = options.crc32;
+    if (options.size != null) this.uncompressedSize = options.size;
+    if (options.compressedSize != null) this.compressedSize = options.compressedSize;
   } else {
     // unknown so far
     this.crcAndFileSizeKnown = false;
@@ -410,8 +419,6 @@ function Entry(metadataPath, isDirectory, options) {
   } else {
     this.compress = true; // default
     if (options.compress != null) this.compress = !!options.compress;
-    if (options.alreadyCompressed) this.alreadyCompressed = !!options.alreadyCompressed;
-    if (options.crc32 != null) this.crc32 = options.crc32;
   }
   this.forceZip64Format = !!options.forceZip64Format;
   if (options.fileComment) {
