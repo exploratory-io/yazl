@@ -397,22 +397,18 @@ function Entry(metadataPath, isDirectory, options) {
     this.crc32 = 0;
     this.uncompressedSize = 0;
     this.compressedSize = 0;
-  } else if (options.alreadyCompressed) {
-    this.alreadyCompressed = true;
-    this.crcAndFileSizeKnown = true;
-    this.crc32 = null;
-    this.uncompressedSize = null;
-    this.compressedSize = null;
-    if (options.crc32 != null) this.crc32 = options.crc32;
-    if (options.size != null) this.uncompressedSize = options.size;
-    if (options.compressedSize != null) this.compressedSize = options.compressedSize;
   } else {
     // unknown so far
     this.crcAndFileSizeKnown = false;
     this.crc32 = null;
     this.uncompressedSize = null;
     this.compressedSize = null;
+    this.alreadyCompressed = false;
     if (options.size != null) this.uncompressedSize = options.size;
+    if (options.crc32 != null) this.crc32 = options.crc32;
+    if (options.compressedSize != null) this.compressedSize = options.compressedSize;
+    if (options.crcAndFileSizeKnown != null) this.crcAndFileSizeKnown = options.crcAndFileSizeKnown;
+    if (options.alreadyCompressed != null) this.alreadyCompressed = options.alreadyCompressed;
   }
   if (isDirectory) {
     this.compress = false;
